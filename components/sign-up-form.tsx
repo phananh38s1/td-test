@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import ButtonLoginWithGoogle from "./buttons/ButtonLoginWithGoogle";
 
 export function SignUpForm({
   className,
@@ -105,6 +106,9 @@ export function SignUpForm({
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
+
+              <span className="text-center">OR</span>
+              <ButtonLoginWithGoogle className="mx-auto mt-5 flex w-full rounded-xs bg-lightwhite md:max-w-[470px] bg-slate-100 rounded-md" />
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
