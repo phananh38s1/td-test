@@ -1,14 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
-export default function ButtonLoginWithGoogle({
+export default function LoginWithGoogleButton({
   className = "relative",
 }: {
   className?: string;
 }) {
   const supabase = createClient();
 
-  const handleLoginWithGoogle = async (e) => {
+  const handleLoginWithGoogle = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
     e.preventDefault();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",

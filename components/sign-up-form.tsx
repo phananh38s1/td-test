@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import ButtonLoginWithGoogle from "./buttons/ButtonLoginWithGoogle";
+import ButtonLoginWithGoogle from "./buttons/LoginWithGoogleButton";
 
 export function SignUpForm({
   className,
@@ -45,7 +45,7 @@ export function SignUpForm({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/candidates`,
         },
       });
       if (error) throw error;
@@ -108,7 +108,7 @@ export function SignUpForm({
               </Button>
 
               <span className="text-center">OR</span>
-              <ButtonLoginWithGoogle className="mx-auto mt-5 flex w-full rounded-xs bg-lightwhite md:max-w-[470px] bg-slate-100 rounded-md" />
+              <ButtonLoginWithGoogle className="mx-auto mt-5 flex w-full rounded-xs bg-lightwhite md:max-w-117.5 bg-slate-100" />
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}

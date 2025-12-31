@@ -1,6 +1,6 @@
 export function formatDate(
   date: Date | string | number | undefined,
-  opts: Intl.DateTimeFormatOptions = {},
+  opts: Intl.DateTimeFormatOptions = {}
 ) {
   if (!date) return "";
 
@@ -11,6 +11,7 @@ export function formatDate(
       year: opts.year ?? "numeric",
       ...opts,
     }).format(new Date(date));
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_err) {
     return "";
   }
