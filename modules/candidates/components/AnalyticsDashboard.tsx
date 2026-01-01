@@ -10,8 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { createClient } from "@/lib/supabase/client";
 import { Candidate } from "@/types/candidates";
+import { SupabaseClient } from "@supabase/supabase-js";
 import {
   BarChart3,
   Briefcase,
@@ -23,6 +23,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+export const dynamic = "force-dynamic";
+
 export type AnalyticsData = {
   total_candidates: number;
   status_ratio: Record<string, number>;
@@ -30,8 +32,11 @@ export type AnalyticsData = {
   recent_candidates: Candidate[];
 };
 
-export default function AnalyticsDashboard() {
-  const supabase = createClient();
+export default function AnalyticsDashboard({
+  supabase,
+}: {
+  supabase: SupabaseClient;
+}) {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

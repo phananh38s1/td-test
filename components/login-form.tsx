@@ -15,12 +15,11 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useState } from "react";
 
-const supabase = createClient();
-
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +38,7 @@ export function LoginForm({
       if (error) throw error;
 
       if (!error) {
-        window.location.href = "/candidates";
+        window.location.href = "/";
       }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");

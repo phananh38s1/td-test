@@ -35,6 +35,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { CreateSchema, useGetCreateSchema } from "../schemas/schema";
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   candidate: {
     id: number;
@@ -45,9 +47,8 @@ interface Props {
   };
 }
 
-const supabase = createClient();
-
 export function DialogUpdateCandidate({ candidate }: Props) {
+  const supabase = createClient();
   const [isOpen, setOpen] = useState(false);
   const [isPending, setLoading] = useState(false);
 

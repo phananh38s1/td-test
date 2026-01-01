@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
           applied_position,
           status: status || "new",
           resume_url,
-          user_id: user.id,
+          // user_id: user.id,
         },
       ])
       .select()

@@ -29,7 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createClient } from "@/lib/supabase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import React, { useState } from "react";
@@ -37,14 +36,14 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { CreateSchema, useGetCreateSchema } from "../schemas/schema";
 import FileUploadForm, { SignedUrlData } from "./FileUploadForm";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 interface Props extends React.ComponentProps<typeof Dialog> {
   showTrigger?: boolean;
+  supabase: SupabaseClient;
 }
 
-const supabase = createClient();
-
-export function DialogAddCandidate({ showTrigger, ...props }: Props) {
+export function DialogAddCandidate({ supabase, showTrigger, ...props }: Props) {
   const [isOpenDialog, setOpenDialog] = useState(false);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [signedUrlData, setSignedUrlData] =
@@ -103,7 +102,6 @@ export function DialogAddCandidate({ showTrigger, ...props }: Props) {
 
   const onSubmit = async (values: CreateSchema) => {
     if (!signedUrlData) return toast("Ứng viên bắt buộc phải có file CV");
-
     setLoading(true);
 
     try {
@@ -153,8 +151,6 @@ export function DialogAddCandidate({ showTrigger, ...props }: Props) {
       setLoading(false);
     }
   };
-
-  console.log("Form Errors:", form.formState.errors);
 
   return (
     <Dialog
