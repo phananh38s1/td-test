@@ -10,6 +10,8 @@ import { DialogAddCandidate } from "./components/DialogAddCandidate";
 import DialogDeleteCandidate from "./components/DialogDeleteCandidate";
 import { DialogUpdateCandidate } from "./components/DialogUpdateCandidate";
 
+export const dynamic = "force-dynamic";
+
 export default function CandidatesPage() {
   const { data } = useRealtimeCandidates();
 
