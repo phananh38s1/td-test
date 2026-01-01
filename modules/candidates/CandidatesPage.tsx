@@ -3,11 +3,12 @@
 import { DataTable } from "@/components/data-table/data-table";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useRealtimeCandidates } from "@/hooks/use-realtime-candidates";
+import { Candidate } from "@/types/candidates";
+import { ColumnDef } from "@tanstack/react-table";
+import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import { DialogAddCandidate } from "./components/DialogAddCandidate";
 import DialogDeleteCandidate from "./components/DialogDeleteCandidate";
 import { DialogUpdateCandidate } from "./components/DialogUpdateCandidate";
-import { ColumnDef } from "@tanstack/react-table";
-import { Candidate } from "@/types/candidates"; // Đảm bảo path này đúng
 
 export default function CandidatesPage() {
   const { data } = useRealtimeCandidates();
@@ -21,9 +22,7 @@ export default function CandidatesPage() {
       header: "Resume",
       cell: ({ getValue }) => {
         const url = getValue<string>();
-
         if (!url) return null;
-
         return (
           <a
             href={url}
@@ -37,14 +36,12 @@ export default function CandidatesPage() {
         );
       },
     },
-
     { accessorKey: "created_at", header: "Created At" },
     {
       id: "actions",
       header: "",
       cell: ({ row }) => {
         const candidate = row.original;
-
         return (
           <div className="flex gap-2">
             <DialogUpdateCandidate candidate={candidate} />
@@ -58,20 +55,20 @@ export default function CandidatesPage() {
     },
   ];
 
-  const pageCount = 1;
-
   const { table } = useDataTable({
     data,
     columns,
-    pageCount,
+    pageCount: 1,
   });
 
   return (
     <>
+      <AnalyticsDashboard />
+
       <DialogAddCandidate showTrigger />
 
       <div className="w-full max-w-7xl">
-        <DataTable table={table}></DataTable>
+        <DataTable table={table} />
       </div>
     </>
   );

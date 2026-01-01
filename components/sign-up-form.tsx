@@ -1,7 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,10 +10,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import ButtonLoginWithGoogle from "./buttons/LoginWithGoogleButton";
 
 export function SignUpForm({
   className,
@@ -106,9 +105,6 @@ export function SignUpForm({
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
-
-              <span className="text-center">OR</span>
-              <ButtonLoginWithGoogle className="mx-auto mt-5 flex w-full rounded-xs bg-lightwhite md:max-w-117.5 bg-slate-100" />
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}

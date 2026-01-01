@@ -61,44 +61,97 @@ export function DialogAddCandidate({ showTrigger, ...props }: Props) {
     resolver: zodResolver(useGetCreateSchema()),
   });
 
+  // const onSubmit = async (values: CreateSchema) => {
+  //   if (!signedUrlData) return toast("Ứng viên bắt buộc phải có file CV");
+
+  //   setLoading(true);
+
+  //   if (selectedFile && signedUrlData) {
+  //     await fetch(signedUrlData.signedUrl, {
+  //       method: "PUT",
+  //       body: selectedFile,
+  //     });
+  //   }
+
+  //   const publicUrl = signedUrlData.signedUrl
+  //     ? supabase.storage.from("resumes").getPublicUrl(signedUrlData.name).data
+  //         .publicUrl
+  //     : null;
+
+  //   const { error } = await supabase
+  //     .from("candidates")
+  //     .insert([
+  //       {
+  //         full_name: values.full_name,
+  //         applied_position: values.applied_position,
+  //         status: values.status,
+  //         resume_url: publicUrl,
+  //       },
+  //     ])
+  //     .select()
+  //     .single();
+
+  //   setLoading(false);
+  //   if (error) return toast("Đã có lỗi xảy ra, thử lại sau");
+
+  //   toast("Thêm mới thành công!");
+  //   form.reset();
+  //   setOpenDialog(false);
+  //   setSelectedFile(null);
+  //   setSignedUrlData(null);
+  // };
+
   const onSubmit = async (values: CreateSchema) => {
     if (!signedUrlData) return toast("Ứng viên bắt buộc phải có file CV");
 
     setLoading(true);
 
-    if (selectedFile && signedUrlData) {
-      await fetch(signedUrlData.signedUrl, {
-        method: "PUT",
-        body: selectedFile,
-      });
-    }
+    try {
+      if (selectedFile && signedUrlData) {
+        const uploadRes = await fetch(signedUrlData.signedUrl, {
+          method: "PUT",
+          body: selectedFile,
+        });
+        if (!uploadRes.ok) throw new Error("Upload file thất bại");
+      }
 
-    const publicUrl = signedUrlData.signedUrl
-      ? supabase.storage.from("resumes").getPublicUrl(signedUrlData.name).data
-          .publicUrl
-      : null;
+      const publicUrl = supabase.storage
+        .from("resumes")
+        .getPublicUrl(signedUrlData.name).data.publicUrl;
 
-    const { error } = await supabase
-      .from("candidates")
-      .insert([
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const { error: funcError } = await supabase.functions.invoke(
+        "add-candidate",
         {
-          full_name: values.full_name,
-          applied_position: values.applied_position,
-          status: values.status,
-          resume_url: publicUrl,
-        },
-      ])
-      .select()
-      .single();
+          body: {
+            full_name: values.full_name,
+            applied_position: values.applied_position,
+            status: values.status,
+            resume_url: publicUrl,
+          },
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        }
+      );
 
-    setLoading(false);
-    if (error) return toast("Đã có lỗi xảy ra, thử lại sau");
+      if (funcError) throw funcError;
 
-    toast("Thêm mới thành công!");
-    form.reset();
-    setOpenDialog(false);
-    setSelectedFile(null);
-    setSignedUrlData(null);
+      toast("Thêm mới thành công!");
+      form.reset();
+      setOpenDialog(false);
+      setSelectedFile(null);
+      setSignedUrlData(null);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Không thể tải dữ liệu";
+      console.log("lỗi thêm ứng viên: ", msg);
+      toast("Đã có lỗi xảy ra!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   console.log("Form Errors:", form.formState.errors);
@@ -117,7 +170,9 @@ export function DialogAddCandidate({ showTrigger, ...props }: Props) {
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent>
+      <DialogContent
+        onPointerDownOutside={(e) => isPending && e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Thêm ứng viên</DialogTitle>
           <DialogDescription>Thêm ứng viên để quản lý</DialogDescription>
@@ -125,70 +180,77 @@ export function DialogAddCandidate({ showTrigger, ...props }: Props) {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <DialogScrollArea>
-              <FormField
-                control={form.control}
-                name="full_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Họ và tên ứng viên</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <fieldset disabled={isPending} className="space-y-4">
+              <DialogScrollArea>
+                <FormField
+                  control={form.control}
+                  name="full_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Họ và tên ứng viên</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="applied_position"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Vị trí ứng tuyển</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="applied_position"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Vị trí ứng tuyển</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Trạng thái ứng viên</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="w-45">
-                        <SelectValue placeholder="Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="new">New</SelectItem>
-                        <SelectItem value="interviewing">
-                          Interviewing
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Trạng thái ứng viên</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-45">
+                          <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="new">New</SelectItem>
+                          <SelectItem value="interviewing">
+                            Interviewing
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FileUploadForm
-                value={selectedFile}
-                onChange={(file) => setSelectedFile(file)}
-                onSignedUrlChange={setSignedUrlData}
-              />
-            </DialogScrollArea>
+                <FileUploadForm
+                  value={selectedFile}
+                  onChange={(file) => setSelectedFile(file)}
+                  onSignedUrlChange={setSignedUrlData}
+                />
+              </DialogScrollArea>
+            </fieldset>
 
             <DialogFooter>
               <LoadingButton loading={isPending} type="submit">
                 Add
               </LoadingButton>
               <DialogClose asChild>
-                <Button variant="outline">Huỷ</Button>
+                <Button disabled={isPending} variant="outline">
+                  Huỷ
+                </Button>
               </DialogClose>
             </DialogFooter>
           </form>

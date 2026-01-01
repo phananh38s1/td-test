@@ -1,7 +1,5 @@
 "use client";
 
-import { CloudUpload, X } from "lucide-react";
-import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
   FileUpload,
@@ -14,8 +12,10 @@ import {
   FileUploadTrigger,
 } from "@/components/ui/file-upload";
 import { createClient } from "@/lib/supabase/client";
-import { toast } from "sonner";
+import { CloudUpload, X } from "lucide-react";
 import { nanoid } from "nanoid";
+import * as React from "react";
+import { toast } from "sonner";
 
 const supabase = createClient();
 
@@ -85,8 +85,8 @@ export default function FileUploadForm({
           <Button variant="link" size="sm" className="p-0">
             choose file
           </Button>
-        </FileUploadTrigger>
-        to upload
+        </FileUploadTrigger>{" "}
+        <span className="text-red-500 font-semibold">1 file</span> to upload
       </FileUploadDropzone>
       <FileUploadList>
         {file && (
